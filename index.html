@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Re-Growth: Ecological Idle Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #2e7d32;
@@ -14,6 +15,13 @@
             --light: #c8e6c9;
             --background: #0c1f0f;
             --text: #e8f5e9;
+            --ui-background: rgba(30, 70, 40, 0.85);
+            --ui-border: 1px solid var(--primary);
+        }
+        
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
         
         body {
@@ -25,13 +33,14 @@
             line-height: 1.6;
             background-image: radial-gradient(circle, #143818 0%, #08110a 100%);
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 1fr 350px;
             gap: 20px;
         }
         
@@ -43,7 +52,10 @@
             border-radius: 10px;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--secondary);
+            border: var(--ui-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         h1 {
@@ -59,6 +71,31 @@
             margin-top: 5px;
         }
         
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            background: rgba(40, 80, 40, 0.7);
+            border: 1px solid var(--secondary);
+            color: var(--light);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .header-btn:hover {
+            background: var(--secondary);
+            color: var(--darker);
+            transform: rotate(15deg);
+        }
+        
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -66,11 +103,11 @@
         }
         
         .game-area {
-            background-color: rgba(30, 70, 40, 0.6);
+            background-color: var(--ui-background);
             border-radius: 10px;
             padding: 20px;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--primary);
+            border: var(--ui-border);
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -78,16 +115,15 @@
         }
         
         .planet-view {
-            height: 200px;
+            height: 250px;
             background: linear-gradient(to bottom, #3d2c1a, #1c150d);
             border-radius: 50%;
             margin: 0 auto 20px;
-            width: 200px;
+            width: 250px;
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 30px rgba(124, 179, 66, 0.4);
             border: 2px solid var(--secondary);
-            transition: all 0.5s ease;
         }
         
         .green-patch {
@@ -95,7 +131,6 @@
             background-color: var(--primary);
             border-radius: 50%;
             opacity: 0.7;
-            transition: all 1s ease;
         }
         
         .stats {
@@ -103,7 +138,10 @@
             border-radius: 10px;
             padding: 15px;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--primary);
+            border: var(--ui-border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
         
         .stat-row {
@@ -115,14 +153,31 @@
             border-radius: 5px;
         }
         
+        .upgrades-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
         .upgrades {
-            background-color: rgba(30, 70, 40, 0.6);
+            background-color: var(--ui-background);
             border-radius: 10px;
             padding: 20px;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--primary);
+            border: var(--ui-border);
             overflow-y: auto;
-            max-height: 500px;
+            max-height: 600px;
+        }
+        
+        .upgrade-category {
+            margin-bottom: 25px;
+        }
+        
+        .category-title {
+            color: var(--accent);
+            border-bottom: 1px solid var(--secondary);
+            padding-bottom: 5px;
+            margin-top: 0;
         }
         
         .upgrade {
@@ -131,8 +186,7 @@
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--secondary);
-            transition: transform 0.2s;
+            border: var(--ui-border);
         }
         
         .upgrade:hover {
@@ -150,6 +204,9 @@
         .upgrade-name {
             font-weight: bold;
             color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .upgrade-cost {
@@ -162,6 +219,12 @@
             font-size: 0.9rem;
         }
         
+        .upgrade-desc {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: #c8e6c9;
+        }
+        
         button {
             background: linear-gradient(to bottom, var(--secondary), var(--primary));
             color: var(--text);
@@ -170,10 +233,13 @@
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.3s;
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
             margin-top: 10px;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         button:hover {
@@ -208,7 +274,6 @@
             background: linear-gradient(to right, var(--primary), var(--secondary));
             border-radius: 10px;
             width: 0%;
-            transition: width 0.5s ease;
         }
         
         .sidebar {
@@ -218,11 +283,11 @@
         }
         
         .action-box {
-            background-color: rgba(30, 70, 40, 0.6);
+            background-color: var(--ui-background);
             border-radius: 10px;
             padding: 20px;
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--primary);
+            border: var(--ui-border);
             text-align: center;
         }
         
@@ -249,16 +314,194 @@
             color: var(--accent);
         }
         
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-            
-            .main-content {
-                grid-template-columns: 1fr;
-            }
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
         
+        .modal-content {
+            background: var(--darker);
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--secondary);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--light);
+        }
+        
+        .modal-title {
+            color: var(--secondary);
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        /* Daily rewards */
+        .daily-rewards {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .reward-day {
+            background: linear-gradient(to bottom, var(--dark), var(--darker));
+            border-radius: 10px;
+            padding: 15px 5px;
+            text-align: center;
+            border: 2px solid var(--primary);
+        }
+        
+        .reward-day.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+        }
+        
+        .reward-day.claimed {
+            border-color: var(--secondary);
+            background: linear-gradient(to bottom, var(--primary), var(--dark));
+        }
+        
+        .reward-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+        
+        .reward-amount {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        /* AI Intro */
+        .ai-intro {
+            background: linear-gradient(to right, #1a237e, #283593);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #5c6bc0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .ai-icon {
+            font-size: 2rem;
+            color: #7986cb;
+        }
+        
+        .ai-title {
+            color: #c5cae9;
+            margin: 0;
+        }
+        
+        .ai-text {
+            line-height: 1.6;
+            color: #e8eaf6;
+        }
+        
+        .ai-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #c5cae9;
+        }
+        
+        /* Settings */
+        .settings-group {
+            margin-bottom: 20px;
+        }
+        
+        .settings-title {
+            color: var(--secondary);
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(30, 60, 30, 0.5);
+            border-radius: 8px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--secondary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Notifications */
         .notification {
             position: fixed;
             top: 20px;
@@ -271,6 +514,9 @@
             transform: translateX(100%);
             transition: transform 0.3s ease;
             z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .notification.show {
@@ -285,13 +531,74 @@
             z-index: 10;
             text-shadow: 1px 1px 2px black;
         }
+        
+        /* Responsive design */
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .upgrades-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px var(--secondary); }
+            50% { box-shadow: 0 0 20px var(--accent); }
+            100% { box-shadow: 0 0 5px var(--secondary); }
+        }
+        
+        .glow {
+            animation: glow 3s infinite;
+        }
     </style>
 </head>
 <body>
+    <!-- AI Introduction -->
+    <div class="ai-intro" id="aiIntro">
+        <span class="ai-close" onclick="closeAiIntro()"><i class="fas fa-times"></i></span>
+        <div class="ai-header">
+            <i class="fas fa-robot ai-icon"></i>
+            <h2 class="ai-title">ECOLOGICAL RESTORATION AI</h2>
+        </div>
+        <div class="ai-text">
+            <p>Hello, Bio-Engineer. Welcome to the <strong>Re-Growth Initiative</strong>.</p>
+            <p>Earth's ecosystem has collapsed. Your mission is to restore life to this barren world by purifying soil, planting vegetation, and reintroducing fauna.</p>
+            <p>You will generate Bio Points (BP) by purifying soil manually and through automated flora. Use these to purchase upgrades and advance through different biological tiers.</p>
+            <p>Remember to check back daily for rewards, and when you've made significant progress, consider a Great Seeding to gain permanent bonuses.</p>
+            <p>The future of this planet is in your hands. Proceed with wisdom.</p>
+        </div>
+    </div>
+
     <div class="container">
         <header>
-            <h1>Re-Growth</h1>
-            <div class="subtitle">Restore life to a barren world</div>
+            <div></div> <!-- Empty div for spacing -->
+            <div>
+                <h1>Re-Growth</h1>
+                <div class="subtitle">Restore life to a barren world</div>
+            </div>
+            <div class="header-controls">
+                <div class="header-btn" onclick="showModal('settingsModal')"><i class="fas fa-cog"></i></div>
+                <div class="header-btn" onclick="showModal('statsModal')"><i class="fas fa-chart-line"></i></div>
+                <div class="header-btn" onclick="showModal('dailyModal')"><i class="fas fa-gift"></i></div>
+                <div class="header-btn" onclick="saveGame(); showNotification('Game saved successfully!')"><i class="fas fa-save"></i></div>
+            </div>
         </header>
         
         <div class="main-content">
@@ -302,60 +609,99 @@
                 </div>
                 <div class="stats">
                     <div class="stat-row">
-                        <span>Biomass:</span>
+                        <span><i class="fas fa-leaf"></i> Biomass:</span>
                         <span id="biomassValue">0</span>
                     </div>
                     <div class="stat-row">
-                        <span>Bio Points per second:</span>
+                        <span><i class="fas fa-bolt"></i> Bio Points per second:</span>
                         <span id="bpsValue">0</span>
                     </div>
                     <div class="stat-row">
-                        <span>Purification Level:</span>
+                        <span><i class="fas fa-tint"></i> Water Storage:</span>
+                        <span id="waterValue">100/100</span>
+                    </div>
+                    <div class="stat-row">
+                        <span><i class="fas fa-recycle"></i> Purification Level:</span>
                         <span id="purificationValue">0%</span>
                     </div>
                 </div>
             </div>
             
-            <div class="upgrades">
-                <h2>Flora Upgrades</h2>
-                <div class="upgrade" id="lichenUpgrade">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">Lichen</span>
-                        <span class="upgrade-cost">Cost: <span id="lichenCost">10</span> BP</span>
+            <div class="upgrades-container">
+                <div class="upgrades">
+                    <h2>Flora Upgrades</h2>
+                    <div class="upgrade" id="lichenUpgrade">
+                        <div class="upgrade-header">
+                            <span class="upgrade-name"><i class="fas fa-seedling"></i> Lichen</span>
+                            <span class="upgrade-cost">Cost: <span id="lichenCost">10</span> BP</span>
+                        </div>
+                        <div class="upgrade-level">Level: <span id="lichenLevel">0</span></div>
+                        <div class="upgrade-desc">Basic plant life that slowly generates Bio Points.</div>
+                        <button onclick="buyUpgrade('lichen')"><i class="fas fa-plus"></i> Plant Lichen</button>
                     </div>
-                    <div class="upgrade-level">Level: <span id="lichenLevel">0</span></div>
-                    <div class="upgrade-desc">Basic plant life that slowly generates Bio Points.</div>
-                    <button onclick="buyUpgrade('lichen')">Plant Lichen</button>
+                    
+                    <div class="upgrade" id="mossUpgrade">
+                        <div class="upgrade-header">
+                            <span class="upgrade-name"><i class="fas fa-pagelines"></i> Moss</span>
+                            <span class="upgrade-cost">Cost: <span id="mossCost">50</span> BP</span>
+                        </div>
+                        <div class="upgrade-level">Level: <span id="mossLevel">0</span></div>
+                        <div class="upgrade-desc">Soft, dense plants that generate more Bio Points.</div>
+                        <button onclick="buyUpgrade('moss')"><i class="fas fa-plus"></i> Plant Moss</button>
+                    </div>
+                    
+                    <div class="upgrade" id="grassUpgrade">
+                        <div class="upgrade-header">
+                            <span class="upgrade-name"><i class="fas fa grass"></i> Grass</span>
+                            <span class="upgrade-cost">Cost: <span id="grassCost">200</span> BP</span>
+                        </div>
+                        <div class="upgrade-level">Level: <span id="grassLevel">0</span></div>
+                        <div class="upgrade-desc">Hardy grass that spreads quickly and generates good BP.</div>
+                        <button onclick="buyUpgrade('grass')"><i class="fas fa-plus"></i> Plant Grass</button>
+                    </div>
+                    
+                    <div class="upgrade" id="shrubsUpgrade">
+                        <div class="upgrade-header">
+                            <span class="upgrade-name"><i class="fas fa-tree"></i> Shrubs</span>
+                            <span class="upgrade-cost">Cost: <span id="shrubsCost">1000</span> BP</span>
+                        </div>
+                        <div class="upgrade-level">Level: <span id="shrubsLevel">0</span></div>
+                        <div class="upgrade-desc">Small woody plants that significantly increase BP generation.</div>
+                        <button onclick="buyUpgrade('shrubs')"><i class="fas fa-plus"></i> Plant Shrubs</button>
+                    </div>
                 </div>
                 
-                <div class="upgrade" id="mossUpgrade">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">Moss</span>
-                        <span class="upgrade-cost">Cost: <span id="mossCost">50</span> BP</span>
+                <div class="upgrades">
+                    <h2>Fauna & Infrastructure</h2>
+                    <div class="upgrade" id="beesUpgrade">
+                        <div class="upgrade-header">
+                            <span class="upgrade-name"><i class="fas fa-crow"></i> Bees</span>
+                            <span class="upgrade-cost">Cost: <span id="beesCost">500</span> BP</span>
+                        </div>
+                        <div class="upgrade-level">Level: <span id="beesLevel">0</span></div>
+                        <div class="upgrade-desc">Pollinators that increase plant efficiency by 5% each.</div>
+                        <button onclick="buyUpgrade('bees')"><i class="fas fa-plus"></i> Introduce Bees</button>
                     </div>
-                    <div class="upgrade-level">Level: <span id="mossLevel">0</span></div>
-                    <div class="upgrade-desc">Soft, dense plants that generate more Bio Points.</div>
-                    <button onclick="buyUpgrade('moss')">Plant Moss</button>
-                </div>
-                
-                <div class="upgrade" id="grassUpgrade">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">Grass</span>
-                        <span class="upgrade-cost">Cost: <span id="grassCost">200</span> BP</span>
+                    
+                    <div class="upgrade" id="waterUpgrade">
+                        <div class="upgrade-header">
+                            <span class="upgrade-name"><i class="fas fa-tint"></i> Water Purifier</span>
+                            <span class="upgrade-cost">Cost: <span id="waterCost">300</span> BP</span>
+                        </div>
+                        <div class="upgrade-level">Level: <span id="waterLevel">0</span></div>
+                        <div class="upgrade-desc">Increases maximum water storage capacity.</div>
+                        <button onclick="buyUpgrade('water')"><i class="fas fa-plus"></i> Build Purifier</button>
                     </div>
-                    <div class="upgrade-level">Level: <span id="grassLevel">0</span></div>
-                    <div class="upgrade-desc">Hardy grass that spreads quickly and generates good BP.</div>
-                    <button onclick="buyUpgrade('grass')">Plant Grass</button>
-                </div>
-                
-                <div class="upgrade" id="shrubsUpgrade">
-                    <div class="upgrade-header">
-                        <span class="upgrade-name">Shrubs</span>
-                        <span class="upgrade-cost">Cost: <span id="shrubsCost">1000</span> BP</span>
+                    
+                    <div class="upgrade" id="droneUpgrade">
+                        <div class="upgrade-header">
+                            <span class="upgrade-name"><i class="fas fa-helicopter"></i> Harvesting Drone</span>
+                            <span class="upgrade-cost">Cost: <span id="droneCost">1200</span> BP</span>
+                        </div>
+                        <div class="upgrade-level">Level: <span id="droneLevel">0</span></div>
+                        <div class="upgrade-desc">Automatically collects Bio Points from plants.</div>
+                        <button onclick="buyUpgrade('drone')"><i class="fas fa-plus"></i> Deploy Drone</button>
                     </div>
-                    <div class="upgrade-level">Level: <span id="shrubsLevel">0</span></div>
-                    <div class="upgrade-desc">Small woody plants that significantly increase BP generation.</div>
-                    <button onclick="buyUpgrade('shrubs')">Plant Shrubs</button>
                 </div>
             </div>
         </div>
@@ -364,49 +710,191 @@
             <div class="action-box">
                 <h2>Resources</h2>
                 <div class="resource">
-                    <span>Bio Points (BP):</span>
+                    <span><i class="fas fa-leaf"></i> Bio Points (BP):</span>
                     <span class="resource-value" id="bioPoints">0</span>
                 </div>
                 <div class="resource">
-                    <span>Genetic Data:</span>
+                    <span><i class="fas fa-dna"></i> Genetic Data:</span>
                     <span class="resource-value" id="geneticData">0</span>
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" id="purificationBar"></div>
                 </div>
-                <button onclick="manualPurify()">Purify Soil</button>
+                <button onclick="manualPurify()"><i class="fas fa-seedling"></i> Purify Soil</button>
             </div>
             
             <div class="action-box prestige">
-                <h2>Prestige</h2>
+                <h2><i class="fas fa-repeat"></i> Prestige</h2>
                 <p>Reset your progress to gain Genetic Data and permanent bonuses</p>
                 <div class="resource">
                     <span>Prestige Bonus:</span>
                     <span class="resource-value" id="prestigeBonus">0%</span>
                 </div>
-                <button onclick="prestige()" id="prestigeButton" disabled>Begin Great Seeding (Requires 20% Purification)</button>
+                <button onclick="prestige()" id="prestigeButton" disabled><i class="fas fa-repeat"></i> Begin Great Seeding (Requires 20% Purification)</button>
             </div>
             
             <div class="action-box">
-                <h2>Stats</h2>
+                <h2><i class="fas fa-line-chart"></i> Production</h2>
                 <div class="resource">
-                    <span>Total Bio Points:</span>
-                    <span class="resource-value" id="totalBioPoints">0</span>
+                    <span><i class="fas fa-seedling"></i> Lichen:</span>
+                    <span class="resource-value" idlichenProduction">0/sec</span>
                 </div>
                 <div class="resource">
-                    <span>Play Time:</span>
-                    <span class="resource-value" id="playTime">00:00:00</span>
+                    <span><i class="fas fa-pagelines"></i> Moss:</span>
+                    <span class="resource-value" id="mossProduction">0/sec</span>
                 </div>
                 <div class="resource">
-                    <span>Version:</span>
-                    <span class="resource-value">0.9.1</span>
+                    <span><i class="fas fa grass"></i> Grass:</span>
+                    <span class="resource-value" id="grassProduction">0/sec</span>
+                </div>
+                <div class="resource">
+                    <span><i class="fas fa-tree"></i> Shrubs:</span>
+                    <span class="resource-value" id="shrubsProduction">0/sec</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
+            <h2 class="modal-title"><i class="fas fa-cog"></i> Settings</h2>
+            
+            <div class="settings-group">
+                <h3 class="settings-title">Game Settings</h3>
+                
+                <div class="setting-item">
+                    <div>
+                        <label for="notifications">Enable Notifications</label>
+                        <p class="setting-desc">Show toast notifications for important events</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="notifications" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <label for="animations">Enable Animations</label>
+                        <p class="setting-desc">Show visual effects and animations</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="animations" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <label for="autosave">Auto-Save</label>
+                        <p class="setting-desc">Automatically save game progress</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="autosave" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3 class="settings-title">Data Management</h3>
+                
+                <button onclick="exportSave()"><i class="fas fa-download"></i> Export Save</button>
+                <button onclick="importSave()"><i class="fas fa-upload"></i> Import Save</button>
+                <button onclick="resetGame()" style="background: linear-gradient(to bottom, #d32f2f, #b71c1c);"><i class="fas fa-trash"></i> Reset Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="dailyModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('dailyModal')">&times;</span>
+            <h2 class="modal-title"><i class="fas fa-gift"></i> Daily Rewards</h2>
+            
+            <p>Login each day to claim rewards! Consecutive days earn better bonuses.</p>
+            
+            <div class="daily-rewards">
+                <div class="reward-day" id="day1">
+                    <div class="reward-icon"><i class="fas fa-seedling"></i></div>
+                    <div class="reward-amount">50 BP</div>
+                    <div>Day 1</div>
+                </div>
+                <div class="reward-day" id="day2">
+                    <div class="reward-icon"><i class="fas fa-pagelines"></i></div>
+                    <div class="reward-amount">100 BP</div>
+                    <div>Day 2</div>
+                </div>
+                <div class="reward-day" id="day3">
+                    <div class="reward-icon"><i class="fas fa-leaf"></i></div>
+                    <div class="reward-amount">200 BP</div>
+                    <div>Day 3</div>
+                </div>
+                <div class="reward-day" id="day4">
+                    <div class="reward-icon"><i class="fas fa-tree"></i></div>
+                    <div class="reward-amount">400 BP</div>
+                    <div>Day 4</div>
+                </div>
+                <div class="reward-day" id="day5">
+                    <div class="reward-icon"><i class="fas fa-crow"></i></div>
+                    <div class="reward-amount">1 Genetic Data</div>
+                    <div>Day 5</div>
+                </div>
+                <div class="reward-day" id="day6">
+                    <div class="reward-icon"><i class="fas fa-tint"></i></div>
+                    <div class="reward-amount">800 BP</div>
+                    <div>Day 6</div>
+                </div>
+                <div class="reward-day" id="day7">
+                    <div class="reward-icon"><i class="fas fa-award"></i></div>
+                    <div class="reward-amount">2 Genetic Data</div>
+                    <div>Day 7</div>
+                </div>
+            </div>
+            
+            <div id="dailyStatus">Your next reward is available in: <span id="dailyTimer">00:00:00</span></div>
+            
+            <button id="claimDaily" disabled><i class="fas fa-gift"></i> Claim Daily Reward</button>
+        </div>
+    </div>
+
+    <div class="modal" id="statsModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('statsModal')">&times;</span>
+            <h2 class="modal-title"><i class="fas fa-chart-line"></i> Statistics</h2>
+            
+            <div class="stats">
+                <div class="stat-row">
+                    <span>Total Bio Points Earned:</span>
+                    <span id="statTotalBP">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Total Play Time:</span>
+                    <span id="statPlayTime">00:00:00</span>
+                </div>
+                <div class="stat-row">
+                    <span>Total Prestiges:</span>
+                    <span id="statPrestiges">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Highest Purification:</span>
+                    <span id="statHighestPurification">0%</span>
+                </div>
+                <div class="stat-row">
+                    <span>Plants Cultivated:</span>
+                    <span id="statTotalPlants">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Manual Purifications:</span>
+                    <span id="statManualClicks">0</span>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Game state
+        // Enhanced game state
         let gameState = {
             bioPoints: 0,
             totalBioPoints: 0,
@@ -414,35 +902,62 @@
             purification: 0,
             lastUpdate: Date.now(),
             playTime: 0,
+            totalPlants: 0,
+            manualClicks: 0,
+            prestiges: 0,
+            highestPurification: 0,
+            water: 100,
+            maxWater: 100,
+            lastDaily: 0,
+            dailyStreak: 0,
             
             upgrades: {
                 lichen: { level: 0, cost: 10, bpPerSecond: 0.1 },
                 moss: { level: 0, cost: 50, bpPerSecond: 0.5 },
                 grass: { level: 0, cost: 200, bpPerSecond: 2 },
-                shrubs: { level: 0, cost: 1000, bpPerSecond: 10 }
+                shrubs: { level: 0, cost: 1000, bpPerSecond: 10 },
+                bees: { level: 0, cost: 500, bpPerSecond: 0 },
+                water: { level: 0, cost: 300, bpPerSecond: 0 },
+                drone: { level: 0, cost: 1200, bpPerSecond: 0 }
+            },
+            
+            settings: {
+                notifications: true,
+                animations: true,
+                autosave: true
             }
         };
         
         // DOM elements
         const bioPointsElement = document.getElementById('bioPoints');
-        const totalBioPointsElement = document.getElementById('totalBioPoints');
+        const totalBioPointsElement = document.getElementById('statTotalBP');
         const geneticDataElement = document.getElementById('geneticData');
         const purificationValueElement = document.getElementById('purificationValue');
         const purificationBarElement = document.getElementById('purificationBar');
         const biomassValueElement = document.getElementById('biomassValue');
         const bpsValueElement = document.getElementById('bpsValue');
+        const waterValueElement = document.getElementById('waterValue');
         const prestigeBonusElement = document.getElementById('prestigeBonus');
-        const playTimeElement = document.getElementById('playTime');
+        const playTimeElement = document.getElementById('statPlayTime');
         const planetViewElement = document.getElementById('planetView');
         const prestigeButton = document.getElementById('prestigeButton');
+        const claimDailyButton = document.getElementById('claimDaily');
+        const dailyTimerElement = document.getElementById('dailyTimer');
         
         // Initialize the game
         function initGame() {
             loadGame();
+            checkDailyReward();
             updateUI();
             gameLoop();
-            setInterval(saveGame, 10000); // Auto-save every 10 seconds
+            setInterval(saveGame, 30000); // Auto-save every 30 seconds
             setInterval(updateTime, 1000); // Update time every second
+            setInterval(updateDailyTimer, 1000); // Update daily timer every second
+            
+            // Apply settings
+            document.getElementById('notifications').checked = gameState.settings.notifications;
+            document.getElementById('animations').checked = gameState.settings.animations;
+            document.getElementById('autosave').checked = gameState.settings.autosave;
         }
         
         // Main game loop
@@ -457,6 +972,9 @@
             gameState.bioPoints += earnedBP;
             gameState.totalBioPoints += earnedBP;
             
+            // Regenerate water
+            gameState.water = Math.min(gameState.maxWater, gameState.water + deltaTime * 0.5);
+            
             // Update UI
             updateUI();
             
@@ -468,10 +986,21 @@
         function calculateBPS() {
             let bps = 0;
             for (const upgrade in gameState.upgrades) {
-                bps += gameState.upgrades[upgrade].level * gameState.upgrades[upgrade].bpPerSecond;
+                if (upgrade !== 'water' && upgrade !== 'drone') {
+                    bps += gameState.upgrades[upgrade].level * gameState.upgrades[upgrade].bpPerSecond;
+                }
             }
-            // Apply prestige bonus
+            
+            // Apply bee bonus (5% per level)
+            const beeBonus = 1 + (gameState.upgrades.bees.level * 0.05);
+            bps *= beeBonus;
+            
+            // Apply drone bonus (auto-collection)
+            bps += gameState.upgrades.drone.level * 0.2;
+            
+            // Apply prestige bonus (5% per genetic data)
             bps *= 1 + (gameState.geneticData * 0.05);
+            
             return bps;
         }
         
@@ -479,7 +1008,9 @@
         function calculateBiomass() {
             let biomass = 0;
             for (const upgrade in gameState.upgrades) {
-                biomass += gameState.upgrades[upgrade].level * gameState.upgrades[upgrade].cost * 0.1;
+                if (upgrade !== 'water' && upgrade !== 'drone') {
+                    biomass += gameState.upgrades[upgrade].level * gameState.upgrades[upgrade].cost * 0.1;
+                }
             }
             return Math.floor(biomass);
         }
@@ -488,9 +1019,17 @@
         function calculatePurification() {
             let totalLevels = 0;
             for (const upgrade in gameState.upgrades) {
-                totalLevels += gameState.upgrades[upgrade].level;
+                if (upgrade !== 'water' && upgrade !== 'drone') {
+                    totalLevels += gameState.upgrades[upgrade].level;
+                }
             }
             gameState.purification = Math.min(100, totalLevels);
+            
+            // Update highest purification
+            if (gameState.purification > gameState.highestPurification) {
+                gameState.highestPurification = gameState.purification;
+            }
+            
             return gameState.purification;
         }
         
@@ -500,6 +1039,7 @@
             bioPointsElement.textContent = formatNumber(gameState.bioPoints);
             totalBioPointsElement.textContent = formatNumber(gameState.totalBioPoints);
             geneticDataElement.textContent = gameState.geneticData;
+            waterValueElement.textContent = `${Math.floor(gameState.water)}/${gameState.maxWater}`;
             
             // Update purification
             const purification = calculatePurification();
@@ -512,6 +1052,12 @@
             
             // Update prestige bonus
             prestigeBonusElement.textContent = `${gameState.geneticData * 5}%`;
+            
+            // Update production stats
+            document.getElementById('lichenProduction').textContent = `${(gameState.upgrades.lichen.level * gameState.upgrades.lichen.bpPerSecond).toFixed(1)}/sec`;
+            document.getElementById('mossProduction').textContent = `${(gameState.upgrades.moss.level * gameState.upgrades.moss.bpPerSecond).toFixed(1)}/sec`;
+            document.getElementById('grassProduction').textContent = `${(gameState.upgrades.grass.level * gameState.upgrades.grass.bpPerSecond).toFixed(1)}/sec`;
+            document.getElementById('shrubsProduction').textContent = `${(gameState.upgrades.shrubs.level * gameState.upgrades.shrubs.bpPerSecond).toFixed(1)}/sec`;
             
             // Update upgrade buttons and costs
             for (const upgrade in gameState.upgrades) {
@@ -536,10 +1082,19 @@
             
             // Update planet view
             updatePlanetView();
+            
+            // Update stats modal
+            document.getElementById('statPlayTime').textContent = formatTime(gameState.playTime);
+            document.getElementById('statPrestiges').textContent = gameState.prestiges;
+            document.getElementById('statHighestPurification').textContent = `${gameState.highestPurification}%`;
+            document.getElementById('statTotalPlants').textContent = gameState.totalPlants;
+            document.getElementById('statManualClicks').textContent = gameState.manualClicks;
         }
         
         // Update the planet view with green patches
         function updatePlanetView() {
+            if (!gameState.settings.animations) return;
+            
             // Clear existing patches (except the first few)
             const existingPatches = planetViewElement.querySelectorAll('.green-patch');
             if (existingPatches.length > 20) {
@@ -559,8 +1114,8 @@
                 patch.style.width = `${size}px`;
                 patch.style.height = `${size}px`;
                 
-                const x = Math.random() * 180;
-                const y = Math.random() * 180;
+                const x = Math.random() * 220;
+                const y = Math.random() * 220;
                 patch.style.left = `${x}px`;
                 patch.style.top = `${y}px`;
                 
@@ -577,6 +1132,8 @@
         
         // Create floating text animation
         function createFloatingText(text, x, y) {
+            if (!gameState.settings.animations) return;
+            
             const floatingText = document.createElement('div');
             floatingText.className = 'floating-text';
             floatingText.textContent = text;
@@ -603,10 +1160,16 @@
         
         // Manual purification action
         function manualPurify() {
-            gameState.bioPoints += 1;
-            gameState.totalBioPoints += 1;
-            createFloatingText('+1', 100, 100);
-            updateUI();
+            if (gameState.water >= 5) {
+                gameState.bioPoints += 1;
+                gameState.totalBioPoints += 1;
+                gameState.water -= 5;
+                gameState.manualClicks++;
+                createFloatingText('+1', 100, 100);
+                updateUI();
+            } else if (gameState.settings.notifications) {
+                showNotification("Not enough water to purify soil!");
+            }
         }
         
         // Buy an upgrade
@@ -616,10 +1179,19 @@
                 gameState.bioPoints -= upgrade.cost;
                 upgrade.level += 1;
                 upgrade.cost = Math.floor(upgrade.cost * 1.15);
+                gameState.totalPlants++;
+                
+                // Special upgrades
+                if (upgradeName === 'water') {
+                    gameState.maxWater = 100 + (upgrade.level * 50);
+                }
+                
                 updateUI();
                 
                 // Show notification
-                showNotification(`${upgradeName.charAt(0).toUpperCase() + upgradeName.slice(1)} upgraded to level ${upgrade.level}!`);
+                if (gameState.settings.notifications) {
+                    showNotification(`${upgradeName.charAt(0).toUpperCase() + upgradeName.slice(1)} upgraded to level ${upgrade.level}!`);
+                }
             }
         }
         
@@ -629,30 +1201,146 @@
                 // Calculate genetic data earned (1 per 10% purification)
                 const earnedGeneticData = Math.floor(gameState.purification / 10);
                 gameState.geneticData += earnedGeneticData;
+                gameState.prestiges++;
                 
                 // Show notification
-                showNotification(`Great Seeding completed! Earned ${earnedGeneticData} Genetic Data.`);
+                if (gameState.settings.notifications) {
+                    showNotification(`Great Seeding completed! Earned ${earnedGeneticData} Genetic Data.`);
+                }
                 
                 // Reset game state but keep genetic data
                 gameState.bioPoints = 0;
                 gameState.purification = 0;
+                gameState.water = 100;
                 
                 for (const upgrade in gameState.upgrades) {
                     gameState.upgrades[upgrade].level = 0;
-                    gameState.upgrades[upgrade].cost = upgrade === 'lichen' ? 10 : 
-                                                      upgrade === 'moss' ? 50 : 
-                                                      upgrade === 'grass' ? 200 : 1000;
+                    gameState.upgrades[upgrade].cost = 
+                        upgrade === 'lichen' ? 10 : 
+                        upgrade === 'moss' ? 50 : 
+                        upgrade === 'grass' ? 200 : 
+                        upgrade === 'shrubs' ? 1000 :
+                        upgrade === 'bees' ? 500 :
+                        upgrade === 'water' ? 300 : 1200;
                 }
                 
                 updateUI();
             }
         }
         
+        // Check daily reward status
+        function checkDailyReward() {
+            const now = Date.now();
+            const lastDaily = gameState.lastDaily;
+            const oneDay = 24 * 60 * 60 * 1000;
+            
+            if (now - lastDaily < oneDay) {
+                // Reward already claimed today
+                claimDailyButton.disabled = true;
+            } else if (now - lastDaily < 2 * oneDay) {
+                // Can claim reward, streak continues
+                claimDailyButton.disabled = false;
+            } else {
+                // Streak broken
+                gameState.dailyStreak = 0;
+                claimDailyButton.disabled = false;
+            }
+            
+            // Update daily reward UI
+            updateDailyRewardsUI();
+        }
+        
+        // Claim daily reward
+        function claimDailyReward() {
+            const now = Date.now();
+            const lastDaily = gameState.lastDaily;
+            const oneDay = 24 * 60 * 60 * 1000;
+            
+            if (now - lastDaily < oneDay) {
+                if (gameState.settings.notifications) {
+                    showNotification("You've already claimed your reward today!");
+                }
+                return;
+            }
+            
+            // Check if streak continues
+            if (now - lastDaily < 2 * oneDay) {
+                gameState.dailyStreak++;
+            } else {
+                gameState.dailyStreak = 1;
+            }
+            
+            // Calculate which day we're on
+            const dayIndex = (gameState.dailyStreak - 1) % 7;
+            
+            // Grant reward based on day
+            const rewards = [50, 100, 200, 400, -1, 800, -2]; // -1 and -2 are special rewards
+            
+            if (rewards[dayIndex] > 0) {
+                gameState.bioPoints += rewards[dayIndex];
+                if (gameState.settings.notifications) {
+                    showNotification(`Claimed ${rewards[dayIndex]} BP as daily reward!`);
+                }
+            } else if (rewards[dayIndex] === -1) {
+                gameState.geneticData += 1;
+                if (gameState.settings.notifications) {
+                    showNotification("Claimed 1 Genetic Data as daily reward!");
+                }
+            } else if (rewards[dayIndex] === -2) {
+                gameState.geneticData += 2;
+                if (gameState.settings.notifications) {
+                    showNotification("Claimed 2 Genetic Data as daily reward!");
+                }
+            }
+            
+            gameState.lastDaily = now;
+            claimDailyButton.disabled = true;
+            updateDailyRewardsUI();
+            updateUI();
+        }
+        
+        // Update daily rewards UI
+        function updateDailyRewardsUI() {
+            const days = document.querySelectorAll('.reward-day');
+            days.forEach((day, index) => {
+                day.classList.remove('active', 'claimed');
+                
+                if (index === (gameState.dailyStreak % 7)) {
+                    day.classList.add('active');
+                } else if (index < (gameState.dailyStreak % 7)) {
+                    day.classList.add('claimed');
+                }
+            });
+        }
+        
+        // Update daily timer
+        function updateDailyTimer() {
+            const now = Date.now();
+            const lastDaily = gameState.lastDaily;
+            const oneDay = 24 * 60 * 60 * 1000;
+            const nextDaily = lastDaily + oneDay;
+            
+            if (now < nextDaily) {
+                const timeLeft = nextDaily - now;
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                dailyTimerElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                claimDailyButton.disabled = true;
+            } else {
+                dailyTimerElement.textContent = "00:00:00";
+                claimDailyButton.disabled = false;
+            }
+        }
+        
         // Show a temporary notification
         function showNotification(message) {
+            if (!gameState.settings.notifications) return;
+            
             const notification = document.createElement('div');
             notification.className = 'notification';
-            notification.textContent = message;
+            notification.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
             document.body.appendChild(notification);
             
             // Show the notification
@@ -680,18 +1368,25 @@
             }
         }
         
+        // Format time
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+        
         // Update play time
         function updateTime() {
             gameState.playTime += 1;
-            const hours = Math.floor(gameState.playTime / 3600);
-            const minutes = Math.floor((gameState.playTime % 3600) / 60);
-            const seconds = gameState.playTime % 60;
-            playTimeElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            playTimeElement.textContent = formatTime(gameState.playTime);
         }
         
         // Save game to localStorage
         function saveGame() {
-            localStorage.setItem('regrowth_save', JSON.stringify(gameState));
+            if (gameState.settings.autosave) {
+                localStorage.setItem('regrowth_save', JSON.stringify(gameState));
+            }
         }
         
         // Load game from localStorage
@@ -703,12 +1398,140 @@
                     // Merge loaded state with current state to ensure all properties exist
                     gameState = { ...gameState, ...parsed };
                     gameState.lastUpdate = Date.now();
-                    showNotification('Game loaded successfully!');
+                    
+                    if (gameState.settings.notifications) {
+                        showNotification('Game loaded successfully!');
+                    }
                 } catch (e) {
                     console.error('Failed to load game:', e);
                 }
             }
         }
+        
+        // Export save data
+        function exportSave() {
+            const saveData = btoa(JSON.stringify(gameState));
+            const blob = new Blob([saveData], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'regrowth_save.txt';
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            
+            if (gameState.settings.notifications) {
+                showNotification('Game data exported!');
+            }
+        }
+        
+        // Import save data
+        function importSave() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.txt';
+            
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    try {
+                        const saveData = JSON.parse(atob(event.target.result));
+                        gameState = { ...gameState, ...saveData };
+                        gameState.lastUpdate = Date.now();
+                        updateUI();
+                        
+                        if (gameState.settings.notifications) {
+                            showNotification('Game data imported successfully!');
+                        }
+                    } catch (err) {
+                        if (gameState.settings.notifications) {
+                            showNotification('Failed to import save data!');
+                        }
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // Reset game
+        function resetGame() {
+            if (confirm("Are you sure you want to reset your game? All progress will be lost!")) {
+                gameState = {
+                    bioPoints: 0,
+                    totalBioPoints: 0,
+                    geneticData: 0,
+                    purification: 0,
+                    lastUpdate: Date.now(),
+                    playTime: 0,
+                    totalPlants: 0,
+                    manualClicks: 0,
+                    prestiges: 0,
+                    highestPurification: 0,
+                    water: 100,
+                    maxWater: 100,
+                    lastDaily: 0,
+                    dailyStreak: 0,
+                    
+                    upgrades: {
+                        lichen: { level: 0, cost: 10, bpPerSecond: 0.1 },
+                        moss: { level: 0, cost: 50, bpPerSecond: 0.5 },
+                        grass: { level: 0, cost: 200, bpPerSecond: 2 },
+                        shrubs: { level: 0, cost: 1000, bpPerSecond: 10 },
+                        bees: { level: 0, cost: 500, bpPerSecond: 0 },
+                        water: { level: 0, cost: 300, bpPerSecond: 0 },
+                        drone: { level: 0, cost: 1200, bpPerSecond: 0 }
+                    },
+                    
+                    settings: {
+                        notifications: true,
+                        animations: true,
+                        autosave: true
+                    }
+                };
+                
+                localStorage.removeItem('regrowth_save');
+                updateUI();
+                
+                if (gameState.settings.notifications) {
+                    showNotification('Game has been reset!');
+                }
+            }
+        }
+        
+        // Modal functions
+        function showModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+        
+        function closeAiIntro() {
+            document.getElementById('aiIntro').style.display = 'none';
+        }
+        
+        // Settings change handlers
+        document.getElementById('notifications').addEventListener('change', function() {
+            gameState.settings.notifications = this.checked;
+            saveGame();
+        });
+        
+        document.getElementById('animations').addEventListener('change', function() {
+            gameState.settings.animations = this.checked;
+            saveGame();
+        });
+        
+        document.getElementById('autosave').addEventListener('change', function() {
+            gameState.settings.autosave = this.checked;
+            saveGame();
+        });
         
         // Initialize the game when the page loads
         window.onload = initGame;
