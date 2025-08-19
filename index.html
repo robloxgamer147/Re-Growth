@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re-Growth: Ecological Idle Game</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #7cb342;
+            --accent: #ffeb3b;
+            --dark: #1b5e20;
+            --darker: #0d3012;
+            --light: #c8e6c9;
+            --background: #0c1f0f;
+            --text: #e8f5e9;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            background-image: radial-gradient(circle, #143818 0%, #08110a 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, var(--darker), var(--dark));
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--secondary);
+        }
+        
+        h1 {
+            margin: 0;
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(124, 179, 66, 0.7);
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            font-style: italic;
+            color: var(--light);
+            margin-top: 5px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .game-area {
+            background-color: rgba(30, 70, 40, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .planet-view {
+            height: 200px;
+            background: linear-gradient(to bottom, #3d2c1a, #1c150d);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            width: 200px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(124, 179, 66, 0.4);
+            border: 2px solid var(--secondary);
+            transition: all 0.5s ease;
+        }
+        
+        .green-patch {
+            position: absolute;
+            background-color: var(--primary);
+            border-radius: 50%;
+            opacity: 0.7;
+            transition: all 1s ease;
+        }
+        
+        .stats {
+            background-color: rgba(40, 80, 40, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary);
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: rgba(20, 50, 20, 0.5);
+            border-radius: 5px;
+        }
+        
+        .upgrades {
+            background-color: rgba(30, 70, 40, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            overflow-y: auto;
+            max-height: 500px;
+        }
+        
+        .upgrade {
+            background: linear-gradient(to right, var(--dark), var(--darker));
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--secondary);
+            transition: transform 0.2s;
+        }
+        
+        .upgrade:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        .upgrade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .upgrade-name {
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .upgrade-cost {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .upgrade-level {
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+        
+        button {
+            background: linear-gradient(to bottom, var(--secondary), var(--primary));
+            color: var(--text);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: linear-gradient(to bottom, var(--primary), var(--dark));
+            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            background: linear-gradient(to bottom, #555, #333);
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: var(--darker);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .action-box {
+            background-color: rgba(30, 70, 40, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            text-align: center;
+        }
+        
+        .prestige {
+            background: linear-gradient(to bottom, #5d4037, #3e2723);
+            text-align: center;
+        }
+        
+        .prestige h3 {
+            color: #ffab91;
+        }
+        
+        .resource {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: rgba(20, 50, 20, 0.5);
+            border-radius: 5px;
+        }
+        
+        .resource-value {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .floating-text {
+            position: absolute;
+            color: var(--accent);
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 10;
+            text-shadow: 1px 1px 2px black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Re-Growth</h1>
+            <div class="subtitle">Restore life to a barren world</div>
+        </header>
+        
+        <div class="main-content">
+            <div class="game-area">
+                <h2>Planet View</h2>
+                <div class="planet-view" id="planetView">
+                    <!-- Green patches will be added dynamically -->
+                </div>
+                <div class="stats">
+                    <div class="stat-row">
+                        <span>Biomass:</span>
+                        <span id="biomassValue">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Bio Points per second:</span>
+                        <span id="bpsValue">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Purification Level:</span>
+                        <span id="purificationValue">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="upgrades">
+                <h2>Flora Upgrades</h2>
+                <div class="upgrade" id="lichenUpgrade">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">Lichen</span>
+                        <span class="upgrade-cost">Cost: <span id="lichenCost">10</span> BP</span>
+                    </div>
+                    <div class="upgrade-level">Level: <span id="lichenLevel">0</span></div>
+                    <div class="upgrade-desc">Basic plant life that slowly generates Bio Points.</div>
+                    <button onclick="buyUpgrade('lichen')">Plant Lichen</button>
+                </div>
+                
+                <div class="upgrade" id="mossUpgrade">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">Moss</span>
+                        <span class="upgrade-cost">Cost: <span id="mossCost">50</span> BP</span>
+                    </div>
+                    <div class="upgrade-level">Level: <span id="mossLevel">0</span></div>
+                    <div class="upgrade-desc">Soft, dense plants that generate more Bio Points.</div>
+                    <button onclick="buyUpgrade('moss')">Plant Moss</button>
+                </div>
+                
+                <div class="upgrade" id="grassUpgrade">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">Grass</span>
+                        <span class="upgrade-cost">Cost: <span id="grassCost">200</span> BP</span>
+                    </div>
+                    <div class="upgrade-level">Level: <span id="grassLevel">0</span></div>
+                    <div class="upgrade-desc">Hardy grass that spreads quickly and generates good BP.</div>
+                    <button onclick="buyUpgrade('grass')">Plant Grass</button>
+                </div>
+                
+                <div class="upgrade" id="shrubsUpgrade">
+                    <div class="upgrade-header">
+                        <span class="upgrade-name">Shrubs</span>
+                        <span class="upgrade-cost">Cost: <span id="shrubsCost">1000</span> BP</span>
+                    </div>
+                    <div class="upgrade-level">Level: <span id="shrubsLevel">0</span></div>
+                    <div class="upgrade-desc">Small woody plants that significantly increase BP generation.</div>
+                    <button onclick="buyUpgrade('shrubs')">Plant Shrubs</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <div class="action-box">
+                <h2>Resources</h2>
+                <div class="resource">
+                    <span>Bio Points (BP):</span>
+                    <span class="resource-value" id="bioPoints">0</span>
+                </div>
+                <div class="resource">
+                    <span>Genetic Data:</span>
+                    <span class="resource-value" id="geneticData">0</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="purificationBar"></div>
+                </div>
+                <button onclick="manualPurify()">Purify Soil</button>
+            </div>
+            
+            <div class="action-box prestige">
+                <h2>Prestige</h2>
+                <p>Reset your progress to gain Genetic Data and permanent bonuses</p>
+                <div class="resource">
+                    <span>Prestige Bonus:</span>
+                    <span class="resource-value" id="prestigeBonus">0%</span>
+                </div>
+                <button onclick="prestige()" id="prestigeButton" disabled>Begin Great Seeding (Requires 20% Purification)</button>
+            </div>
+            
+            <div class="action-box">
+                <h2>Stats</h2>
+                <div class="resource">
+                    <span>Total Bio Points:</span>
+                    <span class="resource-value" id="totalBioPoints">0</span>
+                </div>
+                <div class="resource">
+                    <span>Play Time:</span>
+                    <span class="resource-value" id="playTime">00:00:00</span>
+                </div>
+                <div class="resource">
+                    <span>Version:</span>
+                    <span class="resource-value">0.9.1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            bioPoints: 0,
+            totalBioPoints: 0,
+            geneticData: 0,
+            purification: 0,
+            lastUpdate: Date.now(),
+            playTime: 0,
+            
+            upgrades: {
+                lichen: { level: 0, cost: 10, bpPerSecond: 0.1 },
+                moss: { level: 0, cost: 50, bpPerSecond: 0.5 },
+                grass: { level: 0, cost: 200, bpPerSecond: 2 },
+                shrubs: { level: 0, cost: 1000, bpPerSecond: 10 }
+            }
+        };
+        
+        // DOM elements
+        const bioPointsElement = document.getElementById('bioPoints');
+        const totalBioPointsElement = document.getElementById('totalBioPoints');
+        const geneticDataElement = document.getElementById('geneticData');
+        const purificationValueElement = document.getElementById('purificationValue');
+        const purificationBarElement = document.getElementById('purificationBar');
+        const biomassValueElement = document.getElementById('biomassValue');
+        const bpsValueElement = document.getElementById('bpsValue');
+        const prestigeBonusElement = document.getElementById('prestigeBonus');
+        const playTimeElement = document.getElementById('playTime');
+        const planetViewElement = document.getElementById('planetView');
+        const prestigeButton = document.getElementById('prestigeButton');
+        
+        // Initialize the game
+        function initGame() {
+            loadGame();
+            updateUI();
+            gameLoop();
+            setInterval(saveGame, 10000); // Auto-save every 10 seconds
+            setInterval(updateTime, 1000); // Update time every second
+        }
+        
+        // Main game loop
+        function gameLoop() {
+            const now = Date.now();
+            const deltaTime = (now - gameState.lastUpdate) / 1000;
+            gameState.lastUpdate = now;
+            
+            // Generate Bio Points from upgrades
+            const bioPointsPerSecond = calculateBPS();
+            const earnedBP = bioPointsPerSecond * deltaTime;
+            gameState.bioPoints += earnedBP;
+            gameState.totalBioPoints += earnedBP;
+            
+            // Update UI
+            updateUI();
+            
+            // Continue the loop
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Calculate Bio Points per second
+        function calculateBPS() {
+            let bps = 0;
+            for (const upgrade in gameState.upgrades) {
+                bps += gameState.upgrades[upgrade].level * gameState.upgrades[upgrade].bpPerSecond;
+            }
+            // Apply prestige bonus
+            bps *= 1 + (gameState.geneticData * 0.05);
+            return bps;
+        }
+        
+        // Calculate biomass based on upgrades
+        function calculateBiomass() {
+            let biomass = 0;
+            for (const upgrade in gameState.upgrades) {
+                biomass += gameState.upgrades[upgrade].level * gameState.upgrades[upgrade].cost * 0.1;
+            }
+            return Math.floor(biomass);
+        }
+        
+        // Calculate purification based on upgrades
+        function calculatePurification() {
+            let totalLevels = 0;
+            for (const upgrade in gameState.upgrades) {
+                totalLevels += gameState.upgrades[upgrade].level;
+            }
+            gameState.purification = Math.min(100, totalLevels);
+            return gameState.purification;
+        }
+        
+        // Update the UI
+        function updateUI() {
+            // Update resource values
+            bioPointsElement.textContent = formatNumber(gameState.bioPoints);
+            totalBioPointsElement.textContent = formatNumber(gameState.totalBioPoints);
+            geneticDataElement.textContent = gameState.geneticData;
+            
+            // Update purification
+            const purification = calculatePurification();
+            purificationValueElement.textContent = `${purification}%`;
+            purificationBarElement.style.width = `${purification}%`;
+            
+            // Update biomass and BPS
+            biomassValueElement.textContent = formatNumber(calculateBiomass());
+            bpsValueElement.textContent = formatNumber(calculateBPS());
+            
+            // Update prestige bonus
+            prestigeBonusElement.textContent = `${gameState.geneticData * 5}%`;
+            
+            // Update upgrade buttons and costs
+            for (const upgrade in gameState.upgrades) {
+                const upgradeElement = document.getElementById(`${upgrade}Upgrade`);
+                const costElement = document.getElementById(`${upgrade}Cost`);
+                const levelElement = document.getElementById(`${upgrade}Level`);
+                
+                if (upgradeElement && costElement && levelElement) {
+                    costElement.textContent = Math.floor(gameState.upgrades[upgrade].cost);
+                    levelElement.textContent = gameState.upgrades[upgrade].level;
+                    
+                    // Enable/disable button based on affordability
+                    const button = upgradeElement.querySelector('button');
+                    if (button) {
+                        button.disabled = gameState.bioPoints < gameState.upgrades[upgrade].cost;
+                    }
+                }
+            }
+            
+            // Enable/disable prestige button
+            prestigeButton.disabled = gameState.purification < 20;
+            
+            // Update planet view
+            updatePlanetView();
+        }
+        
+        // Update the planet view with green patches
+        function updatePlanetView() {
+            // Clear existing patches (except the first few)
+            const existingPatches = planetViewElement.querySelectorAll('.green-patch');
+            if (existingPatches.length > 20) {
+                for (let i = 0; i < 10; i++) {
+                    if (existingPatches[i]) {
+                        existingPatches[i].remove();
+                    }
+                }
+            }
+            
+            // Add new patches based on purification level
+            if (Math.random() < gameState.purification / 500) {
+                const patch = document.createElement('div');
+                patch.className = 'green-patch';
+                
+                const size = 5 + Math.random() * 20;
+                patch.style.width = `${size}px`;
+                patch.style.height = `${size}px`;
+                
+                const x = Math.random() * 180;
+                const y = Math.random() * 180;
+                patch.style.left = `${x}px`;
+                patch.style.top = `${y}px`;
+                
+                // Vary the green color slightly
+                const greenVariation = 100 + Math.floor(Math.random() * 100);
+                patch.style.backgroundColor = `rgb(30, ${greenVariation}, 50)`;
+                
+                planetViewElement.appendChild(patch);
+                
+                // Create floating text animation
+                createFloatingText('+1', x, y);
+            }
+        }
+        
+        // Create floating text animation
+        function createFloatingText(text, x, y) {
+            const floatingText = document.createElement('div');
+            floatingText.className = 'floating-text';
+            floatingText.textContent = text;
+            floatingText.style.left = `${x}px`;
+            floatingText.style.top = `${y}px`;
+            
+            planetViewElement.appendChild(floatingText);
+            
+            // Animate the text
+            let opacity = 1;
+            let yPos = y;
+            const animation = setInterval(() => {
+                opacity -= 0.02;
+                yPos -= 2;
+                floatingText.style.opacity = opacity;
+                floatingText.style.top = `${yPos}px`;
+                
+                if (opacity <= 0) {
+                    clearInterval(animation);
+                    floatingText.remove();
+                }
+            }, 50);
+        }
+        
+        // Manual purification action
+        function manualPurify() {
+            gameState.bioPoints += 1;
+            gameState.totalBioPoints += 1;
+            createFloatingText('+1', 100, 100);
+            updateUI();
+        }
+        
+        // Buy an upgrade
+        function buyUpgrade(upgradeName) {
+            const upgrade = gameState.upgrades[upgradeName];
+            if (gameState.bioPoints >= upgrade.cost) {
+                gameState.bioPoints -= upgrade.cost;
+                upgrade.level += 1;
+                upgrade.cost = Math.floor(upgrade.cost * 1.15);
+                updateUI();
+                
+                // Show notification
+                showNotification(`${upgradeName.charAt(0).toUpperCase() + upgradeName.slice(1)} upgraded to level ${upgrade.level}!`);
+            }
+        }
+        
+        // Prestige action
+        function prestige() {
+            if (gameState.purification >= 20) {
+                // Calculate genetic data earned (1 per 10% purification)
+                const earnedGeneticData = Math.floor(gameState.purification / 10);
+                gameState.geneticData += earnedGeneticData;
+                
+                // Show notification
+                showNotification(`Great Seeding completed! Earned ${earnedGeneticData} Genetic Data.`);
+                
+                // Reset game state but keep genetic data
+                gameState.bioPoints = 0;
+                gameState.purification = 0;
+                
+                for (const upgrade in gameState.upgrades) {
+                    gameState.upgrades[upgrade].level = 0;
+                    gameState.upgrades[upgrade].cost = upgrade === 'lichen' ? 10 : 
+                                                      upgrade === 'moss' ? 50 : 
+                                                      upgrade === 'grass' ? 200 : 1000;
+                }
+                
+                updateUI();
+            }
+        }
+        
+        // Show a temporary notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Show the notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Format large numbers
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(2) + 'K';
+            } else {
+                return Math.floor(num);
+            }
+        }
+        
+        // Update play time
+        function updateTime() {
+            gameState.playTime += 1;
+            const hours = Math.floor(gameState.playTime / 3600);
+            const minutes = Math.floor((gameState.playTime % 3600) / 60);
+            const seconds = gameState.playTime % 60;
+            playTimeElement.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        // Save game to localStorage
+        function saveGame() {
+            localStorage.setItem('regrowth_save', JSON.stringify(gameState));
+        }
+        
+        // Load game from localStorage
+        function loadGame() {
+            const save = localStorage.getItem('regrowth_save');
+            if (save) {
+                try {
+                    const parsed = JSON.parse(save);
+                    // Merge loaded state with current state to ensure all properties exist
+                    gameState = { ...gameState, ...parsed };
+                    gameState.lastUpdate = Date.now();
+                    showNotification('Game loaded successfully!');
+                } catch (e) {
+                    console.error('Failed to load game:', e);
+                }
+            }
+        }
+        
+        // Initialize the game when the page loads
+        window.onload = initGame;
+    </script>
+</body>
+</html>
